@@ -48,8 +48,6 @@ def callback():
     sp = spotipy.Spotify(auth=access_token)
     #user정보 가져오기 
     user_info = sp.current_user()
-    user_name = user_info['display_name']
-    print(f'사용자 닉네임 {user_name}')
 
     # 사용자 플레이리스트 가져오기
     playlists = sp.current_user_playlists(limit=10)
