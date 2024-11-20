@@ -4,7 +4,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
 # Spotify API 인증 설정
-with open("config.json") as f:
+with open("./backend/config.json") as f:
     config = json.load(f)
 
 CLIENT_ID = config["client_id"]
@@ -33,7 +33,7 @@ def home():
 @app.route("/login", methods=["GET"])
 def login():
     auth_url = sp_oauth.get_authorize_url() #스포티파이 인증페이지 반환
-    return jsonify({"auth_url": auth_url})
+    return redirect(auth_url)
 
 #로그인 버튼을 누른 후 인증 코드를 받아올 메서드
 @app.route("/api/callback", methods=["GET"])
@@ -57,7 +57,12 @@ def callback():
         {"name": playlist["name"], "id": playlist["id"]}
         for playlist in playlists["items"]
     ]
-    return jsonify("home.html", user=user_info, playlists=playlist_data, message="안녕하세요 시작해봅시다")
+    return render_template(
+        "home.html",
+        user=user_info,
+        playlists=playlist_data,
+        message="안녕하세요 시작해봅시다"
+    )
     
 if __name__ == "__main__":
     app.run(debug=True)

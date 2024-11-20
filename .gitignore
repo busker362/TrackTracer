@@ -1,4 +1,4 @@
 frontend/node_modules/
-.catch
+.cache
 config.json
 TrackTracer구조.txt
