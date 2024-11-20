@@ -33,12 +33,12 @@ def home():
 @app.route("/login", methods=["GET"])
 def login():
     auth_url = sp_oauth.get_authorize_url() #스포티파이 인증페이지 반환
-    return redirect(auth_url)
+    return jsonify({"auth_url": auth_url})
 
 #로그인 버튼을 누른 후 인증 코드를 받아올 메서드
 @app.route("/api/callback", methods=["GET"])
 def callback():
-    code = request.args.get("code")
+    code = request.args.get("code")         #받은 데이터를 가져올때 .args.get을 사용한다. 
     token_info = sp_oauth.get_access_token(code)
     access_token = token_info["access_token"]
 
@@ -57,7 +57,7 @@ def callback():
         {"name": playlist["name"], "id": playlist["id"]}
         for playlist in playlists["items"]
     ]
-    return render_template("home.html", user=user_info, playlists=playlist_data, message="안녕하세요 시작해봅시다")
+    return jsonify("home.html", user=user_info, playlists=playlist_data, message="안녕하세요 시작해봅시다")
     
 if __name__ == "__main__":
     app.run(debug=True)

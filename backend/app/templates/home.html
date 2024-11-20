@@ -18,6 +18,7 @@
     <header>
         <h2>TrackTracer</h2>
         {% if user %}
+        <!-- if문을 이용해서 상황에 따라 원하는 화면을 표시한다. -->
         <div>
             <span>Welcome, {{ user['display_name'] }}</span>
         </div>
@@ -27,6 +28,11 @@
     </header>
     <div>
         <p>{{ message }}</p>
+    </div>
+
+    <div>
+        
+
     </div>
 </body>
 </html>
