@@ -65,7 +65,8 @@ def callback():
 
         # 사용자 플레이리스트 가져오기
         playlist_data = spotify_api.get_user_playlists(access_token)
-
+        playlist_data.reverse()
+        
         return render_template(
             "home.html",
             user=user_info,
@@ -74,29 +75,7 @@ def callback():
             message="당신이 가장 많이 재생한 곡과 플레이 리스트를 확인하세요!"
         )
     except Exception as e:
-        return jsonify({"error": str(e)}), 500  # 에러처리
-
-# # YouTube API 호출
-# @app.route("/test/youtube", methods=["GET"])
-# def test_youtube_api():
-#     youtube_api = YoutubeAPI()
-#     query = "Python programming"
-#     result = youtube_api.search_videos(query)
-#     if "error" in result:
-#         return jsonify({"success": False, "error": result["error"]}), 500
-#     video_title = result["items"][0]["snippet"]["title"] if "items" in result else "No videos found"
-#     return jsonify({"success": True, "video_title": video_title})
-
-# # Last.fm API 호출
-# @app.route("/test/lastfm", methods=["GET"])
-# def test_lastfm_api():
-#     lastfm_api = LastfmAPI()
-#     artist_name = "Coldplay"
-#     result = lastfm_api.get_artist_info(artist_name)
-#     if "error" in result:
-#         return jsonify({"success": False, "error": result["error"]}), 500
-#     artist_info = result.get("artist", {}).get("name", "Unknown Artist")
-#     return jsonify({"success": True, "artist_info": artist_info})
+        return jsonify({"error": str(e)}), 500  
 
 if __name__ == "__main__":
     app.run(debug=True)
