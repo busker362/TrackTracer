@@ -1,23 +1,22 @@
 from flask import Flask, render_template, request, redirect, jsonify, session
-import json
-import spotipy
-from spotipy.oauth2 import SpotifyOAuth
-import os
+import json , os, requests
+from API.Spotify_API import SpotifyAPI
+from API.Youtube_API import YoutubeAPI
+from API.Lastfm_API import LastfmAPI
 
-# Spotify API 인증 설정
+# Spotify API 설정 로드
 with open("./backend/config.json") as f:
     config = json.load(f)
 
-CLIENT_ID = config["client_id"]
-CLIENT_SECRET = config["client_secret"]
-REDIRECT_URI = "http://127.0.0.1:5000/api/callback"
-SECRET_KEY = config["secret_key"]
+YOUTUBE_API_KEY = config["youtube_api_key"]
+LASTFM_API_KEY = config["lastfm_api_key"]
+LASTFM_SECRET_KEY = config["lastfm_secret_key"]
 
-# SpotifyOAuth 객체 생성
-sp_oauth = SpotifyOAuth(
-    client_id=CLIENT_ID,
-    client_secret=CLIENT_SECRET,
-    redirect_uri=REDIRECT_URI,
+# SpotifyAPI 객체 생성
+spotify_api = SpotifyAPI(
+    client_id=config["client_id"],
+    client_secret=config["client_secret"],
+    redirect_uri="http://127.0.0.1:5000/api/callback",
     scope="user-library-read playlist-read-private user-top-read"
 )
 
@@ -27,7 +26,7 @@ app = Flask(
     template_folder=os.path.join(os.getcwd(), "frontend/templates"),
     static_folder=os.path.join(os.getcwd(), "frontend/static")
 )
-app.secret_key = SECRET_KEY
+app.secret_key = config["secret_key"]
 
 @app.route("/")
 def home():
@@ -42,52 +41,30 @@ def home():
         access_token=access_token  # HTML로 전달
     )
 
-
-
-#스포티파이 API를 받아오기 위해서 연결해야함 
 @app.route("/login", methods=["GET"])
 def login():
-    auth_url = sp_oauth.get_authorize_url()  # Spotify 인증 URL 반환
+    """Spotify 로그인 URL로 리다이렉트"""
+    auth_url = spotify_api.get_auth_url()
     return redirect(auth_url)
 
-#로그인 버튼을 누른 후 인증 코드를 받아올 메서드
 @app.route("/api/callback", methods=["GET"])
 def callback():
+    """Spotify 인증 후 콜백 처리"""
     code = request.args.get("code")  # 인증 코드 가져오기
-
     try:
-        token_info = sp_oauth.get_access_token(code)
+        token_info = spotify_api.get_access_token(code)
         session["token_info"] = token_info
-        sp = spotipy.Spotify(auth=token_info["access_token"])                 # Spotipy 객체 초기화
-       
+
+        access_token = token_info["access_token"]
+
         # 사용자 정보 가져오기
-        user_info = sp.current_user()
+        user_info = spotify_api.get_user_info(access_token)
 
-        #사용자 Top Tracks 가져오기
-        top_tracks = sp.current_user_top_tracks(limit=5, time_range="long_term") # 최대 5곡
+        # 사용자 Top Tracks 가져오기
+        track_data = spotify_api.get_user_top_tracks(access_token)
 
-        # 필요한 정보만 정리
-        track_data = [
-            {
-                "rank": idx + 1,
-                "name": track["name"],
-                "artists": ", ".join([artist["name"] for artist in track["artists"]]),
-                "album": track["album"]["name"],
-                "album_image": track["album"]["images"][0]["url"] if track["album"]["images"] else None,  # 앨범 이미지 URL
-                #"preview_url": track.get("preview_url")  # 미리 듣기 URL (없을 수도 있음)
-            }
-            for idx, track in enumerate(top_tracks["items"])
-        ]
-
-        playlists = sp.current_user_playlists(limit=50)
-        playlist_data = [
-            {
-                "id": playlist["id"],
-                "name": playlist["name"],
-                "tracks": playlist["tracks"]["total"]
-            }
-            for playlist in playlists["items"]
-        ]
+        # 사용자 플레이리스트 가져오기
+        playlist_data = spotify_api.get_user_playlists(access_token)
 
         return render_template(
             "home.html",
@@ -97,8 +74,29 @@ def callback():
             message="당신이 가장 많이 재생한 곡과 플레이 리스트를 확인하세요!"
         )
     except Exception as e:
-        return jsonify({"error": str(e)}), 500 # 에러처리 
+        return jsonify({"error": str(e)}), 500  # 에러처리
 
-    
+# # YouTube API 호출
+# @app.route("/test/youtube", methods=["GET"])
+# def test_youtube_api():
+#     youtube_api = YoutubeAPI()
+#     query = "Python programming"
+#     result = youtube_api.search_videos(query)
+#     if "error" in result:
+#         return jsonify({"success": False, "error": result["error"]}), 500
+#     video_title = result["items"][0]["snippet"]["title"] if "items" in result else "No videos found"
+#     return jsonify({"success": True, "video_title": video_title})
+
+# # Last.fm API 호출
+# @app.route("/test/lastfm", methods=["GET"])
+# def test_lastfm_api():
+#     lastfm_api = LastfmAPI()
+#     artist_name = "Coldplay"
+#     result = lastfm_api.get_artist_info(artist_name)
+#     if "error" in result:
+#         return jsonify({"success": False, "error": result["error"]}), 500
+#     artist_info = result.get("artist", {}).get("name", "Unknown Artist")
+#     return jsonify({"success": True, "artist_info": artist_info})
+
 if __name__ == "__main__":
     app.run(debug=True)
