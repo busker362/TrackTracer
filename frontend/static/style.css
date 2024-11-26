@@ -155,16 +155,32 @@ iframe {
 }
 
 .namebackground {
-    background-color: #1DB954;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50px;
     padding: 10px 20px;
     color: white;
-    cursor: pointer;
 }
 
-/* .namebackground:hover {
-    background-color: #218838;
-} */
+.namebackground h3{
+    padding-left: 100px;
+}
+
+.namebackground img{
+    left: auto;
+}
+.needlogin{
+    color: #000;
+}
+
+.loginbtn{
+    padding: 20px 30px;
+    width: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1DB954;
+    border-radius: 50px;
+    cursor: pointer;
+}
