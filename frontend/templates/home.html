@@ -41,6 +41,7 @@
             <button id="close-menu"></button>
 
             <div class="namebackground">    
+                <img src="{{ url_for('static', filename='image/SpotifyLogo46.png') }}" alt="SpotifyLogo">
                 <h3>{{ user['display_name'] }}</h3>
             </div>
         
@@ -70,7 +71,14 @@
             </div>
 
             {% else %}
-                <button onclick="location.href='/login'">Login with Spotify</button>
+    
+            <button class="loginbtn" onclick="location.href='/login'">Login with Spotify</button>
+    
+            <h3>My Play List</h3>
+            <hr>
+            <p class="needlogin">현재 정보를 불러올수 없습니다. <br>
+                로그인이 필요합니다.</p>   
+
             {% endif %}
 
         </div>
