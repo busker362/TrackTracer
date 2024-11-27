@@ -33,6 +33,7 @@
                 <img src="{{ url_for('static', filename='image/menu-icon.png') }}" alt="Menu">
             </button>
         </div>
+
         
            <!-- 오른쪽 메뉴 창 -->
            <div id="side-menu" class="side-menu">
@@ -89,6 +90,35 @@
     <main>
         <h2>가장 많이 재생한 곡</h2>
         <hr>
+        {% if tracks %}
+        <h2>가장 많이 재생한 곡</h2>
+    <ul class="track-list">
+        {% for track in tracks %}
+        <li class="track-item">
+            <div class="album-art">
+                {% if track.album_image %}
+                <img src="{{ track.album_image }}" alt="{{ track.album }}" />
+                {% else %}
+                <img src="https://via.placeholder.com/150" alt="No Album Art" />
+                {% endif %}
+            </div>
+            <div class="track-info">
+                <h3>{{ track.rank }}{{ "st" if track.rank == 1 else "nd" if track.rank == 2 else "rd" if track.rank == 3 else "th" }}: {{ track.name }}</h3>
+                <p><strong>Artists:</strong> {{ track.artists }}</p>
+                <p><strong>Album:</strong> {{ track.album }}</p>
+                {% if track.preview_url %}
+                <audio controls>
+                    <source src="{{ track.preview_url }}" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+                {% endif %}
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No top tracks available.</p>
+    {% endif %}
     </main>
   
     <script src="{{ url_for('static', filename='../static/script.js') }}"></script>
