@@ -38,15 +38,21 @@ class SpotifyAPI:
             for idx, track in enumerate(top_tracks["items"])
         ]
 
+
     def get_user_playlists(self, access_token, limit=50):
         """사용자 플레이리스트 가져오기"""
         sp = spotipy.Spotify(auth=access_token)
-        playlists = sp.current_user_playlists(limit=limit)
-        return [
-            {
-                "id": playlist["id"],
-                "name": playlist["name"],
-                "tracks": playlist["tracks"]["total"]
-            }
-            for playlist in playlists["items"]
-        ]
+        try:
+            playlists = sp.current_user_playlists(limit=limit)
+            print("Playlists API Response:", playlists)  # API 응답 확인
+            return [
+                {
+                    "id": playlist["id"],
+                    "name": playlist["name"],
+                    "tracks": playlist["tracks"]["total"]
+                }
+                for playlist in playlists.get("items", [])  # 'items' 키가 없으면 빈 리스트
+            ]
+        except Exception as e:
+            print("Error in get_user_playlists:", str(e))
+            return []

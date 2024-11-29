@@ -49,24 +49,23 @@ def login():
 
 @app.route("/api/callback", methods=["GET"])
 def callback():
-    """Spotify 인증 후 콜백 처리"""
-    code = request.args.get("code")  # 인증 코드 가져오기
+    code = request.args.get("code")
+    if not code:
+        return jsonify({"error": "Authorization code not found"}), 400
+
     try:
         token_info = spotify_api.get_access_token(code)
         session["token_info"] = token_info
-
         access_token = token_info["access_token"]
 
-        # 사용자 정보 가져오기
         user_info = spotify_api.get_user_info(access_token)
-
-        # 사용자 Top Tracks 가져오기
         track_data = spotify_api.get_user_top_tracks(access_token)
-
-        # 사용자 플레이리스트 가져오기
         playlist_data = spotify_api.get_user_playlists(access_token)
+
+        print("Debug: Playlist Data:", playlist_data)  # 디버깅용 로그
+
         playlist_data.reverse()
-        
+
         return render_template(
             "home.html",
             user=user_info,
@@ -75,7 +74,8 @@ def callback():
             message="당신이 가장 많이 재생한 곡과 플레이 리스트를 확인하세요!"
         )
     except Exception as e:
-        return jsonify({"error": str(e)}), 500  
+        print("Error occurred:", str(e))
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
