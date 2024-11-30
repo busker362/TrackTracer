@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, redirect, jsonify, session
-import json , os, requests
+import json , os, requests, sys
 from API.Spotify_API import SpotifyAPI
 from API.Youtube_API import YoutubeAPI
 from API.Lastfm_API import LastfmAPI
+sys.stdout.reconfigure(encoding='utf-8')
 
 # Spotify API 설정 로드
 with open("./backend/config.json") as f:
@@ -17,7 +18,7 @@ spotify_api = SpotifyAPI(
     client_id=config["client_id"],
     client_secret=config["client_secret"],
     redirect_uri="http://127.0.0.1:5000/api/callback",
-    scope="user-library-read playlist-read-private user-top-read"
+    scope="user-library-read playlist-read-private playlist-read-collaborative user-top-read"
 )
 
 # Flask 애플리케이션 초기화
@@ -30,16 +31,27 @@ app.secret_key = config["secret_key"]
 
 @app.route("/")
 def home():
-    token_info = session.get("token_info", None)
-    access_token = token_info["access_token"] if token_info else None
-    print("Access Token from Flask:", access_token)  # 디버깅용 로그 추가
-    return render_template(
-        "home.html",
-        user=None,
-        playlists=[],
-        message="Hello!",
-        access_token=access_token  # HTML로 전달
-    )
+    try:
+        # 세션에서 사용자 데이터와 재생목록 가져오기
+        user_info = session.get("user_info", None)
+        playlist_data = session.get("playlists", [])
+        track_data = session.get("tracks", [])
+
+        # 디버깅 로그
+        print("Debug: User Info in Session:", user_info)
+        print("Debug: Playlist Data in Session:", playlist_data)
+        print("Debug: Track Data in Session:", track_data)
+
+        return render_template(
+            "home.html",
+            user=user_info,
+            playlists=playlist_data,
+            tracks=track_data,
+            message="당신이 가장 많이 재생한 곡과 플레이 리스트를 확인하세요!"
+        )
+    except Exception as e:
+        print("Error in home route:", str(e))
+        return jsonify({"error": "Something went wrong", "details": str(e)}), 500
 
 @app.route("/login", methods=["GET"])
 def login():
@@ -49,33 +61,43 @@ def login():
 
 @app.route("/api/callback", methods=["GET"])
 def callback():
-    code = request.args.get("code")
-    if not code:
-        return jsonify({"error": "Authorization code not found"}), 400
-
     try:
+        code = request.args.get("code")
+        if not code:
+            print("Error: Authorization code not found.")
+            return jsonify({"error": "Authorization code not found"}), 400
+
+        # 액세스 토큰 가져오기
         token_info = spotify_api.get_access_token(code)
         session["token_info"] = token_info
         access_token = token_info["access_token"]
 
+        # 사용자 정보 및 데이터 가져오기
         user_info = spotify_api.get_user_info(access_token)
-        track_data = spotify_api.get_user_top_tracks(access_token)
         playlist_data = spotify_api.get_user_playlists(access_token)
 
-        print("Debug: Playlist Data:", playlist_data)  # 디버깅용 로그
+        # 가장 많이 재생한 곡 정보 가져오기
+        track_data = spotify_api.get_user_top_tracks(access_token)
+        print("Debug: Top Tracks Data:", track_data)  # 디버깅 로그
 
-        playlist_data.reverse()
+        # 세션에 데이터 저장
+        session["user_info"] = user_info
+        session["playlists"] = playlist_data
+        session["tracks"] = track_data
 
-        return render_template(
-            "home.html",
-            user=user_info,
-            tracks=track_data,
-            playlists=playlist_data,
-            message="당신이 가장 많이 재생한 곡과 플레이 리스트를 확인하세요!"
-        )
+        # 메인 페이지로 리다이렉트
+        return redirect("/")
     except Exception as e:
-        print("Error occurred:", str(e))
-        return jsonify({"error": str(e)}), 500
+        print("Error in callback route:", str(e))
+        return jsonify({"error": "Internal Server Error", "details": str(e)}), 500
+    
+@app.route("/logout", methods=["GET"])
+def logout():
+    """로그아웃: 세션 데이터 제거 후 메인 페이지로 리다이렉트"""
+    session.clear()  # 세션 데이터 제거
+    print("User logged out.")  # 로그 확인
+    return redirect("/")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
