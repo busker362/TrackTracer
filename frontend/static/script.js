@@ -10,13 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 메뉴 닫기 (닫기 버튼 클릭 시)
-    if (closeMenuButton) {
-        closeMenuButton.addEventListener("click", () => {
-            sideMenu.classList.remove("active");
-        });
-    }
-
     // 메뉴 외부 클릭 시 닫기
     document.addEventListener("click", (event) => {
         const isClickInsideMenu = sideMenu.contains(event.target);
@@ -29,10 +22,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // 재생목록 토글 함수
 function togglePlaylist(playlistId) {
+    const allPlaylists = document.querySelectorAll(".playlist-details");
+    allPlaylists.forEach(div => {
+        if (div.id !== `playlist-${playlistId}`) {
+            div.style.display = "none";
+        }
+    });
+
     const playlistDiv = document.getElementById(`playlist-${playlistId}`);
-    if (playlistDiv.style.display === "none" || !playlistDiv.style.display) {
-        playlistDiv.style.display = "block"; // 펼치기
-    } else {
-        playlistDiv.style.display = "none"; // 숨기기
-    }
+    playlistDiv.style.display = playlistDiv.style.display === "none" || !playlistDiv.style.display
+        ? "block"
+        : "none";
 }

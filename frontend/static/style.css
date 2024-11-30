@@ -184,3 +184,19 @@ iframe {
     border-radius: 50px;
     cursor: pointer;
 }
+
+.logout-btn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #ff5555;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.logout-btn:hover {
+    background-color: #ff3333;
+}
