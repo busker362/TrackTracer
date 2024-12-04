@@ -78,7 +78,6 @@ def callback():
 
         # 가장 많이 재생한 곡 정보 가져오기
         track_data = spotify_api.get_user_top_tracks(access_token)
-        print("Debug: Top Tracks Data:", track_data)  # 디버깅 로그
 
         # 세션에 데이터 저장
         session["user_info"] = user_info
