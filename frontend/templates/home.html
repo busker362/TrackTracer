@@ -59,38 +59,36 @@
         </div>
     </header>
     
-    <main>
+    <main class="main-content">
         <h2>가장 많이 재생한 곡</h2>
-        <hr>
-        {% if tracks %}
-        <ul class="track-list">
-            {% for track in tracks %}
-            <li class="track-item">
-                <div class="album-art">
-                    {% if track.album_image %}
-                    <img src="{{ track.album_image }}" alt="{{ track.album }}" />
-                    {% else %}
-                    <img src="https://via.placeholder.com/150" alt="No Album Art" />
-                    {% endif %}
+        <hr style="border:0; height:1px; background: #000;">
+        <div class="musicfield">
+            {% if tracks %}
+            <div class="track-list">
+                {% for track in tracks %}
+                <div class="track-card">
+                    <h3 class="rank">{{ track.rank }}{{ "st" if track.rank == 1 else "nd" if track.rank == 2 else "rd" if track.rank == 3 else "th" }}</h3>
+                    <div class="album-art">
+                        {% if track.album_image %}
+                        <img src="{{ track.album_image }}" alt="{{ track.album }}" />
+                        {% else %}
+                        <img src="https://via.placeholder.com/150" alt="No Album Art" />
+                        {% endif %}
+                    </div>
+                    <div class="track-info">
+                        <h4 class="music-name">{{ track.name }}</h4>
+                        <p class="artist-name">Artists : {{ track.artists }}</p>
+                        <p class="album-name">Album : {{ track.album }}</p>
+                    </div>
                 </div>
-                <div class="track-info">
-                    <h3>{{ track.rank }}{{ "st" if track.rank == 1 else "nd" if track.rank == 2 else "rd" if track.rank == 3 else "th" }}: {{ track.name }}</h3>
-                    <p><strong>Artists:</strong> {{ track.artists }}</p>
-                    <p><strong>Album:</strong> {{ track.album }}</p>
-                    {% if track.preview_url %}
-                    <audio controls>
-                        <source src="{{ track.preview_url }}" type="audio/mpeg">
-                        Your browser does not support the audio element.
-                    </audio>
-                    {% endif %}
-                </div>
-            </li>
-            {% endfor %}
-        </ul>
-        {% else %}
-        <p>No top tracks available.</p>
-        {% endif %}
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>No top tracks available.</p>
+            {% endif %}
+        </div>
     </main>
+    
     <script src="{{ url_for('static', filename='../static/script.js') }}"></script>
 </body>
 </html>
