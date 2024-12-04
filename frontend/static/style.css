@@ -57,7 +57,7 @@ body {
 }
 
 .main-content {
-    width: 70%; 
+    width: 75%; 
     margin: 20px auto;
     padding: 10px 20px 30px 20px;
     background: #f9f9f9;
@@ -210,7 +210,6 @@ iframe {
     gap: 20px; 
     justify-content: center;
     align-items: flex-start;
-    overflow-x: auto; /* 카드가 많아지면 스크롤 가능 */
     padding: 10px;
     box-sizing: border-box;
 }
