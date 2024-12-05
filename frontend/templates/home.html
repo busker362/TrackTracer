@@ -67,6 +67,7 @@
             <div class="track-list">
                 {% for track in tracks %}
                 <div class="track-card">
+                    <div class="album-bg" style="background-image: url('{{ track.album_image }}');"></div>
                     <h3 class="rank">{{ track.rank }}{{ "st" if track.rank == 1 else "nd" if track.rank == 2 else "rd" if track.rank == 3 else "th" }}</h3>
                     <div class="album-art">
                         {% if track.album_image %}
@@ -77,8 +78,8 @@
                     </div>
                     <div class="track-info">
                         <h4 class="music-name">{{ track.name }}</h4>
-                        <p class="artist-name">Artists : {{ track.artists }}</p>
-                        <p class="album-name">Album : {{ track.album }}</p>
+                        <p class="artist-name">Artists: {{ track.artists }}</p>
+                        <p class="album-name">Album: {{ track.album }}</p>
                     </div>
                 </div>
                 {% endfor %}
