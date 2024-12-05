@@ -46,7 +46,7 @@ def home():
             "home.html",
             user=user_info,
             playlists=playlist_data,
-            tracks=track_data,
+            tracks=track_data,  # preview_url 포함된 모든 곡 전달
             message="당신이 가장 많이 재생한 곡과 플레이 리스트를 확인하세요!"
         )
     except Exception as e:
@@ -64,37 +64,30 @@ def callback():
     try:
         code = request.args.get("code")
         if not code:
-            print("Error: Authorization code not found.")
             return jsonify({"error": "Authorization code not found"}), 400
 
-        # 액세스 토큰 가져오기
+        # Access token 가져오기
         token_info = spotify_api.get_access_token(code)
         session["token_info"] = token_info
         access_token = token_info["access_token"]
 
-        # 사용자 정보 및 데이터 가져오기
+        # 사용자 정보 및 곡 데이터 가져오기
         user_info = spotify_api.get_user_info(access_token)
-        playlist_data = spotify_api.get_user_playlists(access_token)
-
-        # 가장 많이 재생한 곡 정보 가져오기
         track_data = spotify_api.get_user_top_tracks(access_token)
 
-        # 세션에 데이터 저장
         session["user_info"] = user_info
-        session["playlists"] = playlist_data
-        session["tracks"] = track_data
+        session["tracks"] = track_data  # 미리듣기 URL 포함
 
-        # 메인 페이지로 리다이렉트
         return redirect("/")
     except Exception as e:
-        print("Error in callback route:", str(e))
+        print(f"Error: {e}")
         return jsonify({"error": "Internal Server Error", "details": str(e)}), 500
     
 @app.route("/logout", methods=["GET"])
 def logout():
     """로그아웃: 세션 데이터 제거 후 메인 페이지로 리다이렉트"""
-    session.clear()  # 세션 데이터 제거
-    print("User logged out.")  # 로그 확인
+    session.clear()  
+    print("User logged out.")  
     return redirect("/")
 
 
