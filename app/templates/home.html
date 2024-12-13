@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TrackTracer</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -49,26 +49,39 @@
     
     
     <main class="music-container">
-        {% for track in tracks %}
-        <div class="music-info">
-            <div class="track-rank">{{ track.rank }}</div>
-            <div class="track-details">
-                <h2 class="track-title">{{ track.name }}</h2>
-                <p class="artist-name">{{ track.artists }}</p>
-                <div class="progress-bar">
-                    <div class="progress"></div>
+        <div class="content-wrapper">
+
+            <h3 class="album-name">Album_Name</h3> <!-- 앨범 이름 -->
+            <div class="vinyl-image"></div> <!-- LP 디스크 -->
+
+            <div id="music-info" class="music-info">
+                <div id="track-rank" class="track-rank">1st</div>
+
+                <div class="track-details">
+                    <h1 id="track-title" class="track-title">Music_Name</h1>
+                    <p id="artist-name" class="artist-name">Artists_Name</p>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="time-display-container">
+                        <span id="current-time" class="time-display">0:00</span>
+                        <span id="total-time" class="time-display">3:45</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progress" class="progress"></div>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button id="prev-music" class="prev-music">Prev  <br> Music</button>
+                    <button id="play-pause" class="play-pause">&#9658;</button>
+                    <button id="next-music" class="next-music">Next <br> Music</button>
                 </div>
             </div>
-            <div class="controls">
-                <button class="prev-music">Prev Music</button>
-                <button class="play-pause">&#9658;</button>
-                <button class="next-music">Next Music</button>
-            </div>
         </div>
-        {% endfor %}
     </main>
     
-    </main>
-    <script src="{{ url_for('static', filename='../static/script.js') }}"></script>
+    
+    <script src="{{ url_for('static', filename='/js/script.js') }}"></script>
 </body>
 </html>

@@ -1,12 +1,12 @@
 from flask import Flask, render_template, request, redirect, jsonify, session
 import json , os, requests, sys
-from API.Spotify_API import SpotifyAPI
-from API.Youtube_API import YoutubeAPI
-from API.Lastfm_API import LastfmAPI
+from app.routes.API.Youtube_API import YoutubeAPI
+from app.routes.API.Lastfm_API import LastfmAPI
+from app.routes.API.Spotify_API import SpotifyAPI
 sys.stdout.reconfigure(encoding='utf-8')
 
 # Spotify API 설정 로드
-with open("./backend/config.json") as f:
+with open("app/config.json") as f:
     config = json.load(f)
 
 YOUTUBE_API_KEY = config["youtube_api_key"]
@@ -24,8 +24,8 @@ spotify_api = SpotifyAPI(
 # Flask 애플리케이션 초기화
 app = Flask(
     __name__,
-    template_folder=os.path.join(os.getcwd(), "frontend/templates"),
-    static_folder=os.path.join(os.getcwd(), "frontend/static")
+    template_folder=os.path.join(os.getcwd(), "app/templates"),
+    static_folder=os.path.join(os.getcwd(), "app/static")
 )
 app.secret_key = config["secret_key"]
 
@@ -43,7 +43,7 @@ def home():
         print("Debug: Track Data in Session:", track_data)
 
         return render_template(
-            "home.html",
+            "home.html",  # templates 폴더 내 상대 경로
             user=user_info,
             playlists=playlist_data,
             tracks=track_data,  # preview_url 포함된 모든 곡 전달
@@ -89,6 +89,12 @@ def logout():
     session.clear()  
     print("User logged out.")  
     return redirect("/")
+
+@app.route("/api/tracks", methods=["GET"])
+def get_tracks():
+    """세션에 저장된 트랙 데이터를 반환"""
+    tracks = session.get("tracks", [])
+    return jsonify(tracks)
 
 
 if __name__ == "__main__":
