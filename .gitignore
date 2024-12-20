@@ -1,5 +1,8 @@
-frontend/node_modules/
+
 .cache
 config.json
 TrackTracer구조.txt
 __pycache__
+venv
+node_modules
+backend/requirements.txt
