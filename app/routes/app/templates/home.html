@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrackTracer</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        
+        <div class="logo">
+            <h1>TrackTracer</h1>
+        </div>
+        
+
+        <div class="menu">
+            <button id="open-menu-button">
+                <img src="{{ url_for('static', filename='image/menu-icon.png') }}" alt="Menu">
+            </button>
+        </div>
+        
+        <div id="side-menu" class="side-menu">
+            {% if user %}
+            <button id="close-menu"></button>
+            <div class="namebackground">
+                <img src="{{ url_for('static', filename='image/SpotifyLogo.png') }}" alt="SpotifyLogo">
+                <h2>{{ user['display_name'] }}</h2>
+            </div>
+            <!--
+            <div class="search-bar">
+                <form id="search-form" onsubmit="performSearch(event)">
+                    <input type="text" id="search-query" placeholder="검색">
+                    <button type="submit">
+                        <img src="{{ url_for('static', filename='image/search-icon.png') }}" alt="Search">
+                    </button>
+                </form>
+            </div>
+            -->
+
+            <a href="/logout" class="logout-btn">Logout</a>
+            {% else %}
+            <button class="loginbtn" onclick="location.href='/login'"><h3>Login with Spotify</h3></button>
+      
+            {% endif %}
+        </div>
+    </header>
+    
+    
+    <main class="music-container">
+        <div class="content-wrapper">
+
+            <h3 class="album-name">Album_Name</h3> <!-- 앨범 이름 -->
+            <div class="vinyl-image"></div> <!-- LP 디스크 -->
+
+            <div id="music-info" class="music-info">
+                <div id="track-rank" class="track-rank">1st</div>
+
+                <div class="track-details">
+                    <h1 id="track-title" class="track-title">Music_Name</h1>
+                    <p id="artist-name" class="artist-name">Artists_Name</p>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="time-display-container">
+                        <span id="current-time" class="time-display">0:00</span>
+                        <span id="total-time" class="time-display">3:45</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progress" class="progress"></div>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button id="prev-music" class="prev-music">Prev  <br> Music</button>
+                    <button id="play-pause" class="play-pause">&#9658;</button>
+                    <button id="next-music" class="next-music">Next <br> Music</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    
+    <script src="{{ url_for('static', filename='/js/script.js') }}"></script>
+</body>
+</html>

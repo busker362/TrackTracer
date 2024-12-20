@@ -38,23 +38,4 @@ class SpotifyAPI:
             for idx, track in enumerate(top_tracks["items"])
         ]
 
-
-    def get_user_playlists(self, access_token, limit=50):
-        sp = spotipy.Spotify(auth=access_token)
-        try:
-            playlists = sp.current_user_playlists(limit=limit)
-            
-            items = playlists.get("items", [])
-            items.reverse()
-            return [
-                {
-                    "id": playlist["id"],
-                    "name": playlist["name"],
-                    "tracks": playlist["tracks"]["total"]
-                }
-                for playlist in playlists.get("items", [])
-            ]
-        except Exception as e:
-            print("Error in get_user_playlists:", str(e))
-            return []
         
